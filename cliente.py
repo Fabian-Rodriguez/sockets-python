@@ -1,30 +1,34 @@
 import socket
+import threading
+
+def manejar_mensajes_recibidos(client_socket):
+    while True:
+        mensaje = client_socket.recv(1024).decode('utf-8')
+        print("\nMensaje del servidor: ", mensaje)
 
 def start_client():
-    # Crear un socket
+
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    # Conectar el socket al servidor
-    server_address = ('localhost', 12345)
+    direccion_ip = input("Introduce la direccion ip: ")
+    puerto = input("Introduce el puerto: ")
+
+    server_address = (f'{direccion_ip}', int(puerto))
     client_socket.connect(server_address)
-    nombre = input('Ingrese su nombre: ')
+
+    nombre = input("Introduce tu nombre: ")
+    client_socket.sendall(nombre.encode('utf-8'))
+
+    threading.Thread(target=manejar_mensajes_recibidos, args=(client_socket,)).start()
 
     while True:
-        message = input('Mensaje: ')
-        client_socket.sendall(nombre.encode('utf-8'))
-        client_socket.sendall(message.encode('utf-8'))
-        if message == 'QUIT':
-            print("Terminaste la conversación")
-            client_socket.close()
+        mensaje = input(f"{nombre}> ")
+        client_socket.sendall(mensaje.encode('utf-8'))
+        if mensaje == 'chao':
             break
-        else:
-            reply = client_socket.recv(1024).decode('utf-8')
-            if reply == 'QUIT':
-                print("El servidor terminó la conversación")
-                client_socket.close()
-                break
-            else:
-                print("Servidor: " + reply)
 
-if __name__ == '__main__':
+    client_socket.close()
+
+if __name__ == "__main__":
     start_client()
+
