@@ -1,2 +1,2 @@
 ﻿# sockets-python
-##Actividad de creacion de un chat entre usuarios utilizando sockets
+Actividad de creacion de un chat entre usuarios utilizando sockets
